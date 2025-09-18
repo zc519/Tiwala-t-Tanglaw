@@ -10,7 +10,7 @@
     :root{
       /* Colors */
       --bg:#F9F9F9;
-      --patriotic-red:#D32F2F;
+      --patriotic-red:#0D47A1; /* Now matches deep blue */
       --deep-blue:#0D47A1;
       --gold:#FDB913;
       --muted:#7A818A;
@@ -61,8 +61,24 @@
     input[type=text],input[type=password],select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ee;font-size:var(--body-size)}
     .small{font-size:0.85rem}
 
-    .primary-btn{background:var(--patriotic-red);color:white;border:none;padding:10px 16px;border-radius:var(--cta-radius);cursor:pointer;font-weight:600}
-    .secondary-btn{background:transparent;border:2px solid var(--patriotic-red);color:var(--patriotic-red);padding:8px 12px;border-radius:12px;cursor:pointer}
+    .primary-btn{
+      background:var(--patriotic-red); /* Now blue */
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:var(--cta-radius);
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    .secondary-btn{
+      background:transparent;
+      border:2px solid var(--patriotic-red); /* Now blue */
+      color:var(--patriotic-red); /* Now blue */
+      padding:8px 12px;
+      border-radius:12px;
+      cursor:pointer;
+    }
 
     .link-row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
 
@@ -354,15 +370,23 @@
 #largeTextBtn:focus {
   outline: 3px solid var(--deep-blue);
 }
-#notifBtn,
-#logoutBtn {
+#notifBtn {
   background: #fff !important;
   color: var(--deep-blue) !important;
   border: 2px solid var(--deep-blue) !important;
 }
-#notifBtn:focus,
-#logoutBtn:focus {
+#notifBtn:focus {
   outline: 3px solid var(--deep-blue);
+}
+
+/* Make logout button red (inverted) */
+#logoutBtn {
+  background: var(--danger) !important;
+  color: #fff !important;
+  border: 2px solid var(--danger) !important;
+}
+#logoutBtn:focus {
+  outline: 3px solid var(--danger);
 }
 
 /* Make "Signed in as" text white in app shell */
