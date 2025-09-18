@@ -112,37 +112,40 @@
 
     /* Responsive */
     @media (max-width:900px){
+      html, body {
+        width: 100vw;
+        min-width: 0;
+        overflow-x: hidden;
+        padding: 0;
+      }
       body {
-        padding-bottom: 80px; /* Space for bottom nav */
+        padding-bottom: 72px; /* Space for bottom nav */
+        background: var(--bg);
       }
       .app-shell {
         min-height: 100vh;
         flex-direction: column;
+        width: 100vw;
+        max-width: 100vw;
       }
-      .top-nav {
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 10px 8px;
-        font-size: 1rem;
-      }
-      .top-nav .search {
-        order: 3;
-        width: 100%;
-        margin-top: 8px;
+      .container,
+      .main-row {
+        max-width: 100vw;
+        width: 100vw;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       .main-row {
         flex-direction: column;
         gap: 0;
-        padding: 8px;
+        padding: 8px !important;
       }
-      .sidebar {
-        display: none !important;
-      }
+      .sidebar,
       .right-panel {
         display: none !important;
       }
       .content {
-        width: 100%;
+        width: 100vw;
         min-width: 0;
         padding: 0;
       }
@@ -150,10 +153,55 @@
         border-radius: 12px;
         box-shadow: var(--shadow);
         margin-bottom: 12px;
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px !important;
       }
       .kpi-row {
         flex-direction: column;
         gap: 8px;
+      }
+      .row {
+        flex-direction: column;
+        gap: 0;
+      }
+      .col {
+        width: 100%;
+        min-width: 0;
+      }
+      .map-mock {
+        height: 180px;
+        font-size: 1rem;
+      }
+      .top-nav {
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 8px;
+        font-size: 1rem;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .top-nav > div {
+        width: 100%;
+        margin-bottom: 4px;
+      }
+      .top-nav .search {
+        order: 3;
+        width: 100%;
+        margin-top: 8px;
+      }
+      .top-nav input {
+        font-size: 1rem;
+        padding: 8px;
+      }
+      .logo-box {
+        width: 32px !important;
+        height: 32px !important;
+        margin: 0 !important;
+        border-radius: 12px !important;
+      }
+      .logo-img {
+        border-radius: 10px !important;
       }
       .bottom-nav {
         display: flex !important;
@@ -161,7 +209,6 @@
         bottom: 0;
         left: 0;
         width: 100vw;
-        max-width: 100vw;
         border-radius: 0;
         box-shadow: 0 -2px 12px rgba(13,71,161,0.10);
         background: var(--card);
@@ -199,7 +246,7 @@
       .fab {
         display: none !important;
       }
-      /* Hide scrollbars for tables on mobile */
+      /* Responsive tables */
       table {
         font-size: 0.95rem;
         overflow-x: auto;
@@ -208,6 +255,7 @@
       }
       th, td {
         padding: 8px;
+        white-space: nowrap;
       }
       /* Make modals full screen on mobile */
       .modal-backdrop {
@@ -219,6 +267,48 @@
         max-width: 100vw;
         min-height: 100vh;
         padding: 18px 8px;
+      }
+      /* Login screen mobile */
+      .login-screen {
+        padding: 8px !important;
+        min-height: 100vh;
+        align-items: flex-start;
+        justify-content: flex-start;
+      }
+      .login-wrap {
+        flex-direction: column;
+        max-width: 100vw;
+        width: 100vw;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+      }
+      .brand-panel {
+        border-radius: 0;
+        padding: 18px 12px;
+        min-width: 0;
+        width: 100vw;
+        text-align: center;
+      }
+      .form-card {
+        padding: 18px 12px;
+        min-width: 0;
+        width: 100vw;
+      }
+      .form-group label {
+        font-size: 1rem;
+      }
+      .primary-btn, .secondary-btn {
+        font-size: 1rem;
+        padding: 10px 0;
+        width: 100%;
+        margin-bottom: 8px;
+      }
+      .link-row {
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+        margin-top: 12px;
       }
     }
 
