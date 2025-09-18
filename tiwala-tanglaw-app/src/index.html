@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tiwala't Tanglaw — UI Prototype</title>
+  <meta name="description" content="Responsive prototype (HTML/CSS/JS) of Tiwala't Tanglaw based on provided UI/UX flow." />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="screen-login" class="login-screen" role="main">
+  <div class="login-wrap card" aria-labelledby="loginTitle">
+    <div class="brand-panel">
+      <div class="logo-box">
+        <img src="assets/tiwala't tanglaw.jpg" alt="Tiwala't Tanglaw Logo" class="logo-img">
+      </div>
+      <h1 id="loginTitle" style="margin:0;">Tiwala't Tanglaw</h1>
+      <p class="tiny">Transparency for public works</p>
+      <div style="margin-top:18px">
+        <strong>Welcome</strong>
+        <p class="tiny">Sign in with your government account or continue as guest</p>
+      </div>
+      <div style="margin-top:24px;font-size:0.9rem">
+        <button class="secondary-btn" id="highContrastBtn" aria-pressed="false">High-contrast</button>
+        <button class="secondary-btn" id="largeTextBtn" style="margin-left:8px" aria-pressed="false">Large text</button>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div>
+          <h2 style="margin:0">Sign in</h2>
+          <p class="tiny muted">Use email/password or Government SSO</p>
+        </div>
+        <div class="tiny">Need help? <a href="#">Contact LGU admin</a></div>
+      </div>
+
+      <div id="loginForm">
+        <div class="form-group">
+          <label for="email">Email or username</label>
+          <input id="email" type="text" placeholder="name@domain.gov.ph" aria-describedby="emailHelp" />
+          <div id="emailError" class="error" style="display:none"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div style="display:flex;gap:8px;align-items:center"><input id="password" type="password" aria-describedby="pwdHelp" /><button id="togglePwd" class="secondary-btn" style="height:40px">Show</button></div>
+          <div id="pwdError" class="error" style="display:none"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role">
+            <option value="">Select role (or use SSO)</option>
+            <option value="citizen">Citizen</option>
+            <option value="lgu">LGU Officer</option>
+            <option value="auditor">Auditor</option>
+            <option value="ngo">NGO</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:12px;margin-top:12px">
+          <button class="primary-btn" id="loginBtn" disabled>Login</button>
+          <button class="secondary-btn" id="ssoBtn">Login with SSO / GovID</button>
+          <div style="flex:1"></div>
+        </div>
+
+        <div class="link-row">
+          <a href="#" id="forgot">Forgot password?</a>
+          <a href="#" id="guest">Continue as guest / Report an issue</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== APP SHELL ========== -->
+<div id="screen-app" class="app-shell" style="display:none">
+  <header class="top-nav" role="navigation">
+    <div class="menu-toggle" id="menuToggle" style="display:none;">
+      <span style="font-size:2rem;cursor:pointer;">☰</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-box" style="width:32px;height:32px;margin:0;">
+        <img src="assets/tiwala't tanglaw.jpg" alt="Tiwala't Tanglaw Logo" class="logo-img" style="width:100%;height:100%;border-radius:12px;">
+      </div>
+      <div class="logo">Tiwala't Tanglaw</div>
+    </div>
+    <div class="search"><input id="globalSearch" placeholder="Search projects, contractors, locations..." aria-label="Global search"/></div>
+    <div><button id="notifBtn" class="secondary-btn">🔔 <span id="notifCount">0</span></button></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="tiny muted">Signed in as <strong id="currentUser">—</strong></div>
+      <div><img id="avatar" src="" alt="User avatar" style="width:36px;height:36px;border-radius:50%"/></div>
+      <div><button id="logoutBtn" class="secondary-btn">Logout</button></div>
+    </div>
+  </header>
+
+  <div class="main-row container">
+    <aside class="sidebar" aria-label="Main navigation">
+      <div class="nav-item" data-route="dashboard">🏠 <span>Dashboard</span></div>
+      <div class="nav-item" data-route="projects">📁 <span>Projects / Procurement</span></div>
+      <div class="nav-item" data-route="map">🗺️ <span>Map</span></div>
+      <div class="nav-item" data-route="reports">📝 <span>Citizen Reports</span></div>
+      <div class="nav-item" data-route="anomalies">⚠️ <span>Anomalies</span></div>
+      <div class="nav-item" data-route="audit">🧾 <span>Audit Toolkit</span></div>
+      <div class="nav-item" data-route="settings">⚙️ <span>Settings</span></div>
+    </aside>
+
+    <main class="content">
+      <!-- Dashboard view -->
+      <section id="view-dashboard">
+        <div class="kpi-row">
+          <div class="kpi card">
+            <div class="tiny">Active Projects</div>
+            <div style="font-size:1.4rem;font-weight:700" id="kpi-projects">0</div>
+          </div>
+          <div class="kpi card">
+            <div class="tiny">% On-time</div>
+            <div style="font-size:1.4rem;font-weight:700" id="kpi-ontime">0%</div>
+          </div>
+          <div class="kpi card">
+            <div class="tiny">Amount spent</div>
+            <div style="font-size:1.4rem;font-weight:700" id="kpi-spent">₱0</div>
+          </div>
+          <div class="kpi card">
+            <div class="tiny">Flagged Anomalies</div>
+            <div style="font-size:1.4rem;font-weight:700;color:var(--danger)" id="kpi-flagged">0</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="map-mock card">Interactive map (mock). Pins clickable.</div>
+            <div style="margin-top:12px" class="card" id="recentProjects">
+              <div style="padding:12px;border-bottom:1px solid #eef2f6;display:flex;justify-content:space-between;align-items:center">
+                <strong>Recent Projects</strong>
+                <button class="secondary-btn" id="createProjectBtn">Create project</button>
+              </div>
+              <div style="padding:12px;overflow:auto;max-height:260px">
+                <table id="projectsTable" aria-describedby="projectsHelp">
+                  <thead><tr><th>Project ID</th><th>Title</th><th>Stage</th><th>Budget</th><th></th></tr></thead>
+                  <tbody></tbody>
+                </table>
+                <div id="projectsHelp" class="tiny muted">Click a project to open details.</div>
+              </div>
+            </div>
+          </div>
+
+          <aside class="right-panel">
+            <div class="card" style="padding:12px;margin-bottom:12px">
+              <strong>Recent alerts</strong>
+              <div id="alertsList" style="margin-top:8px"></div>
+            </div>
+
+            <div class="card" style="padding:12px">
+              <strong>Quick actions</strong>
+              <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+                <button class="primary-btn" id="uploadProgressBtn">Upload progress</button>
+                <button class="secondary-btn" id="openProcBtn">Open procurement</button>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- Projects list view -->
+      <section id="view-projects" style="display:none">
+        <div class="card" style="padding:12px;margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Procurement Tracker</strong>
+            <div style="display:flex;gap:8px;align-items:center">
+              <label class="tiny">View</label>
+              <select id="projView">
+                <option>Table</option>
+                <option>Timeline</option>
+                <option>Kanban</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;overflow:auto;max-height:560px">
+            <table id="procTable">
+              <thead><tr><th>ID</th><th>Title</th><th>Stage</th><th>Awardee</th><th>Budget</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Map view -->
+      <section id="view-map" style="display:none">
+        <div class="card" style="padding:12px">
+          <strong>Map</strong>
+          <div class="map-mock" style="margin-top:12px">Map (mock)</div>
+        </div>
+      </section>
+
+      <!-- Citizen reports -->
+      <section id="view-reports" style="display:none">
+        <div class="card" style="padding:12px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <strong>Citizen Reports</strong>
+            <button class="primary-btn" id="reportIssueBtn">Report an Issue</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <table id="reportsTable"><thead><tr><th>ID</th><th>Category</th><th>Location</th><th>Status</th></tr></thead><tbody></tbody></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Anomalies -->
+      <section id="view-anomalies" style="display:none">
+        <div class="card" style="padding:12px">
+          <strong>Anomalies & Audit</strong>
+          <div id="anomalyList" style="margin-top:12px"></div>
+        </div>
+      </section>
+
+      <!-- Settings -->
+      <section id="view-settings" style="display:none">
+        <div class="card" style="padding:12px">
+          <strong>Settings & Profile</strong>
+          <div style="margin-top:12px">
+            <label class="tiny">Full name</label>
+            <input id="setName"/>
+            <label class="tiny">Email</label>
+            <input id="setEmail"/>
+            <div style="margin-top:8px;display:flex;gap:8px"><button class="primary-btn" id="saveSettingsBtn">Save</button></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <button class="fab" id="fabReport" title="Report">＋</button>
+</div>
+
+
+<!-- ===== MODALS ===== -->
+<!-- 2FA modal -->
+<div id="modal-2fa" class="modal-backdrop" style="display:none" role="dialog" aria-modal="true" aria-labelledby="twoFATitle">
+  <div class="modal">
+    <h3 id="twoFATitle">Two-factor authentication</h3>
+    <p class="tiny muted">Enter the 6-digit code sent to your phone/email</p>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <input id="code1" maxlength="1" aria-label="Digit 1" style="width:44px;text-align:center;font-size:1.2rem" />
+      <input id="code2" maxlength="1" aria-label="Digit 2" style="width:44px;text-align:center;font-size:1.2rem" />
+      <input id="code3" maxlength="1" aria-label="Digit 3" style="width:44px;text-align:center;font-size:1.2rem" />
+      <input id="code4" maxlength="1" aria-label="Digit 4" style="width:44px;text-align:center;font-size:1.2rem" />
+      <input id="code5" maxlength="1" aria-label="Digit 5" style="width:44px;text-align:center;font-size:1.2rem" />
+      <input id="code6" maxlength="1" aria-label="Digit 6" style="width:44px;text-align:center;font-size:1.2rem" />
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="tiny">Code expires in <span id="codeTimer">02:00</span></div>
+      <div style="display:flex;gap:8px"><button class="secondary-btn" id="resendBtn">Resend code</button><button class="primary-btn" id="verify2fa">Verify</button></div>
+    </div>
+    <div id="twoFaError" class="error" style="display:none;margin-top:8px"></div>
+  </div>
+</div>
+
+<!-- Onboarding modal -->
+<div id="modal-onboard" class="modal-backdrop" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal">
+    <h3>Welcome — Tell us about you</h3>
+    <div style="margin-top:12px">
+      <label class="tiny">Full name</label>
+      <input id="onName"/>
+      <label class="tiny">Organization</label>
+      <input id="onOrg" placeholder="Start typing..." />
+      <label class="tiny">Office / LGU</label>
+      <input id="onLGU"/>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:12px">
+      <button class="secondary-btn" id="skipOnboard">Skip tour</button>
+      <button class="primary-btn" id="saveOnboard">Save & continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- Report modal -->
+<div id="modal-report" class="modal-backdrop" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal">
+    <h3>Report an issue</h3>
+    <p class="tiny muted">Quick report for citizens (photo + category)</p>
+    <label class="tiny">Category</label>
+    <select id="repCategory"><option value="">Select</option><option value="delay">Delay</option><option value="corruption">Corruption</option><option value="safety">Safety</option><option value="other">Other</option></select>
+    <label class="tiny">Photo (simulated)</label>
+    <input id="repPhoto" type="file" accept="image/*" />
+    <label class="tiny">Description</label>
+    <textarea id="repDesc" rows="3" maxlength="300" placeholder="Short description (max 300 chars)"></textarea>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+      <div class="tiny muted">Attach location: <input type="checkbox" id="repLocate" checked/></div>
+      <div style="display:flex;gap:8px"><button class="secondary-btn" id="cancelReport">Cancel</button><button class="primary-btn" id="submitReport">Submit</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- Project details modal -->
+<div id="modal-project" class="modal-backdrop" style="display:none" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="project-header">
+      <div>
+        <h3 id="projTitle">Project title</h3>
+        <div class="tiny muted">ID: <span id="projId">—</span> • Agency: <span id="projAgency">—</span></div>
+      </div>
+      <div style="min-width:220px">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><button class="primary-btn">Add progress</button><button class="secondary-btn">Export dossier</button></div>
+        <div class="progress" aria-hidden><i id="projProgress" style="width:0%"></i></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <div style="display:flex;gap:12px">
+        <div style="flex:1">
+          <h4>Overview</h4>
+          <p id="projOverview" class="tiny muted">Summary & timeline</p>
+        </div>
+        <div style="width:320px">
+          <h4>Financials</h4>
+          <p class="tiny muted" id="projFin">Payments & receipts</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:12px"><button class="secondary-btn" id="closeProject">Close</button></div>
+  </div>
+</div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
