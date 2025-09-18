@@ -154,6 +154,33 @@
   border-radius: 18px; /* Slightly less than the box for a nice effect */
 }
 
+/* Make accessibility buttons white */
+#highContrastBtn,
+#largeTextBtn {
+  background: #fff !important;
+  color: var(--deep-blue) !important;
+  border: 2px solid var(--deep-blue) !important;
+}
+#highContrastBtn:focus,
+#largeTextBtn:focus {
+  outline: 3px solid var(--deep-blue);
+}
+#notifBtn,
+#logoutBtn {
+  background: #fff !important;
+  color: var(--deep-blue) !important;
+  border: 2px solid var(--deep-blue) !important;
+}
+#notifBtn:focus,
+#logoutBtn:focus {
+  outline: 3px solid var(--deep-blue);
+}
+
+/* Make "Signed in as" text white in app shell */
+.top-nav .tiny.muted {
+  color: #fff !important;
+}
+
   </style>
 </head>
 <body>
@@ -229,7 +256,12 @@
 <!-- ========== APP SHELL ========== -->
 <div id="screen-app" class="app-shell" style="display:none">
   <header class="top-nav" role="navigation">
-    <div class="logo">Tiwala't Tanglaw</div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo-box" style="width:32px;height:32px;margin:0;">
+        <img src="tiwala't tanglaw.jpg" alt="Tiwala't Tanglaw Logo" class="logo-img" style="width:100%;height:100%;border-radius:12px;">
+      </div>
+      <div class="logo">Tiwala't Tanglaw</div>
+    </div>
     <div class="search"><input id="globalSearch" placeholder="Search projects, contractors, locations..." aria-label="Global search"/></div>
     <div><button id="notifBtn" class="secondary-btn">🔔 <span id="notifCount">0</span></button></div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -381,11 +413,11 @@
 
   <button class="fab" id="fabReport" title="Report">＋</button>
   <nav class="bottom-nav" role="navigation" aria-label="Mobile nav">
-    <button class="secondary-btn">🏠</button>
-    <button class="secondary-btn">🗺️</button>
-    <button class="primary-btn">＋</button>
-    <button class="secondary-btn">🔔</button>
-    <button class="secondary-btn">⚙️</button>
+    <button class="secondary-btn" data-route="dashboard">🏠</button>
+    <button class="secondary-btn" data-route="map">🗺️</button>
+    <button class="primary-btn" id="fabMobile">＋</button>
+    <button class="secondary-btn" data-route="anomalies">🔔</button>
+    <button class="secondary-btn" data-route="settings">⚙️</button>
   </nav>
 </div>
 
@@ -706,8 +738,22 @@
   // Keyboard-friendly 2FA inputs: auto-advance
   for(let i=1;i<=6;i++){ const el=document.getElementById('code'+i); el.addEventListener('input', (e)=>{ if(el.value.length>=1 && i<6) document.getElementById('code'+(i+1)).focus(); }); }
 
-  // Wire up view switch for mobile nav quick demo
-  document.querySelector('.bottom-nav').addEventListener('click', (e)=>{ if(e.target.tagName==='BUTTON'){ alert('Mobile nav pressed (demo)'); } });
+  // Wire up view switch for mobile nav
+  document.querySelector('.bottom-nav').addEventListener('click', (e) => {
+    if (e.target.tagName === 'BUTTON' && e.target.hasAttribute('data-route')) {
+      const route = e.target.getAttribute('data-route');
+      for (const s in screens) {
+        screens[s].style.display = 'none';
+      }
+      if (screens[route]) {
+        screens[route].style.display = 'block';
+      }
+    }
+    // Optionally handle the fabMobile button (report modal)
+    if (e.target.id === 'fabMobile') {
+      document.getElementById('modal-report').style.display = 'flex';
+    }
+  });
 
   // Basic accessibility: focus login email on load
   email.focus();
