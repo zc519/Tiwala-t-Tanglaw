@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tiwala't Tanglaw — UI Prototype</title>
+  <meta name="description" content="Prototype UI for Tiwala't Tanglaw — login, dashboards, reports, audit toolkit." />
+  <style>
+    /* ====== Design tokens ====== */
+    :root{
+      --bg:#F9F9F9;
+      --primary:#D32F2F; /* Patriotic Red */
+      --accent:#0D47A1;  /* Deep Blue */
+      --gold:#FDB913;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --radius-card:8px;
+      --radius-cta:20px;
+      --shadow:0 2px 6px rgba(13,71,161,0.08);
+      --gap:16px;
+      --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px;
+      --font-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    /* ====== Reset ====== */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font-sans);
+      background:var(--bg);
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    /* ====== Layout ====== */
+    .app{
+      min-height:100vh;
+      display:flex;
+      align-items:stretch;
+    }
+    /* Sidebar (desktop) */
+    .sidebar{
+      width:260px;
+      background:var(--card);
+      border-right:1px solid rgba(15,23,42,0.04);
+      padding:20px;
+      box-shadow:var(--shadow);
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .sidebar .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--primary));display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    .sidebar nav{margin-top:8px}
+    .nav-item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:8px;color:var(--muted);cursor:pointer}
+    .nav-item.active{background:linear-gradient(90deg,rgba(13,71,161,0.06),rgba(211,47,47,0.03));color:var(--accent);}
+    .nav-item:hover{background:rgba(13,71,161,0.03)}
+    .content{
+      flex:1;padding:20px;display:flex;flex-direction:column;gap:20px;
+    }
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .search{flex:1;display:flex;align-items:center;gap:8px;background:#fff;padding:8px;border-radius:12px;box-shadow:var(--shadow)}
+    .card{background:var(--card);padding:16px;border-radius:var(--radius-card);box-shadow:var(--shadow)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .kpi{display:flex;flex-direction:column;gap:6px}
+    .kpi .value{font-size:20px;font-weight:700}
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;border:1px solid transparent;cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--primary);color:white;border-radius:var(--radius-cta);}
+    .btn.secondary{background:white;color:var(--primary);border:1px solid var(--primary);}
+    .btn.ghost{background:transparent;color:var(--accent)}
+    /* Login area */
+    .login-wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px}
+    .login-card{width:900px;display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(2,6,23,0.08)}
+    .login-left{background:linear-gradient(180deg,var(--accent),#0b57bd);color:white;padding:28px;display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+    .login-left h1{margin:0;font-size:20px}
+    .login-right{background:var(--card);padding:28px}
+    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+    input[type=text],input[type=password],select,textarea{padding:10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);font-size:14px}
+    .muted{color:var(--muted);font-size:13px}
+    .links{display:flex;gap:12px;align-items:center}
+    /* Modals */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center}
+    .modal{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:720px;box-shadow:0 12px 40px rgba(2,6,23,0.12)}
+    .hidden{display:none}
+    /* Table */
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:10px;border-bottom:1px solid rgba(2,6,23,0.04);text-align:left}
+    /* Responsive */
+    @media (max-width:900px){
+      .login-card{width:100%;grid-template-columns:1fr}
+      .sidebar{display:none}
+      .grid{grid-template-columns:repeat(1,1fr)}
+    }
+    /* Small helpers */
+    .badge{background:var(--gold);padding:4px 8px;border-radius:999px;font-weight:700;color:#08203a}
+    .status-ontrack{background:linear-gradient(90deg,#e8f0ff,#dbeafe);color:var(--accent);padding:6px 8px;border-radius:8px}
+    .status-flagged{background:linear-gradient(90deg,#fff1f0,#ffe6e6);color:var(--primary);padding:6px 8px;border-radius:8px}
+    .map-placeholder{height:320px;border-radius:8px;background:linear-gradient(180deg,#e6f0ff,#f4f8ff);display:flex;align-items:center;justify-content:center;color:var(--accent);font-weight:700}
+    .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .photo-grid img{width:100%;height:100px;object-fit:cover;border-radius:8px}
+    .fab{position:fixed;right:20px;bottom:20px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--primary);color:white;font-weight:800;box-shadow:0 8px 26px rgba(211,47,47,0.18);cursor:pointer}
+    .toast{position:fixed;right:20px;top:20px;background:#0b1320;color:white;padding:10px 14px;border-radius:8px;box-shadow:0 6px 20px rgba(2,6,23,0.18)}
+    .sr-only{position:absolute;left:-9999px}
+  </style>
+</head>
+<body>
+  <div id="app-root"></div>
+
+  <div id="modal-root"></div>
+
+  <template id="login-template">
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="login-left">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="logo">TT</div>
+            <div>
+              <h1>Tiwala't Tanglaw</h1>
+              <div class="muted">Transparency for public works</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;font-size:13px">Supported by Government SSO • Built for Philippine LGUs</div>
+        </div>
+        <div class="login-right">
+          <h2>Sign in</h2>
+          <div class="muted">Securely access your dashboard</div>
+          <div style="height:12px"></div>
+          <div class="form-group">
+            <label for="email">Email or username</label>
+            <input id="email" type="text" placeholder="name@domain.gov.ph" aria-describedby="emailHelp" />
+            <div id="emailHelp" class="muted sr-only">Enter government email or username</div>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div style="display:flex;gap:8px"><input id="password" type="password" placeholder="••••••••"/><button id="togglePw" class="btn ghost" type="button">Show</button></div>
+          </div>
+          <div class="form-group">
+            <label for="role">Role</label>
+            <select id="role"><option value="">Select role or use SSO</option><option>Citizen</option><option>LGU Officer</option><option>Auditor</option><option>NGO</option><option>Admin</option></select>
+          </div>
+          <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+            <button id="loginBtn" class="btn primary">Login</button>
+            <button id="ssoBtn" class="btn secondary">Login with SSO / GovID</button>
+            <div style="margin-left:auto" class="links muted"><a href="#" id="guest">Continue as guest</a></div>
+          </div>
+          <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+            <div class="links"><a href="#">Forgot password?</a></div>
+            <div class="links"><button id="contrast" class="btn ghost">High-contrast</button><button id="largeText" class="btn ghost">Large text</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="app-template">
+    <div class="app">
+      <aside class="sidebar">
+        <div class="brand"><div class="logo">TT</div><div><div style="font-weight:700">Tiwala't Tanglaw</div><div class="muted" style="font-size:12px">Transparency for public works</div></div></div>
+        <nav>
+          <div class="nav-item active" data-view="dashboard">Dashboard</div>
+          <div class="nav-item" data-view="projects">Projects / Procurement</div>
+          <div class="nav-item" data-view="map">Map</div>
+          <div class="nav-item" data-view="reports">Citizen Reports</div>
+          <div class="nav-item" data-view="anomalies">Anomalies</div>
+          <div class="nav-item" data-view="audit">Audit Toolkit</div>
+          <div class="nav-item" data-view="exports">Exports</div>
+          <div class="nav-item" data-view="settings">Settings</div>
+          <div class="nav-item" data-view="help">Help</div>
+        </nav>
+        <div style="margin-top:auto;font-size:13px" class="muted">Logged in as <strong id="userName">Guest</strong></div>
+      </aside>
+      <main class="content">
+        <div class="topbar">
+          <div style="display:flex;gap:12px;align-items:center;flex:1">
+            <div class="search" role="search"><input id="globalSearch" placeholder="Search project ID, contractor, location" style="border:0;outline:none;flex:1"/></div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div id="notifBell" style="position:relative;cursor:pointer">🔔<span id="notifBadge" style="position:absolute;right:-6px;top:-6px;background:var(--primary);color:white;border-radius:999px;padding:4px 6px;font-size:12px">3</span></div>
+              <div id="avatar" style="display:flex;align-items:center;gap:8px;cursor:pointer"><div style="width:36px;height:36px;border-radius:999px;background:linear-gradient(90deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;color:white">SD</div><div class="muted">Socrates</div></div>
+            </div>
+          </div>
+        </div>
+
+        <section id="viewArea"></section>
+
+      </main>
+      <div class="fab" title="Report Issue" id="reportFab">+</div>
+    </div>
+  </template>
+
+  <template id="dashboard-template">
+    <div>
+      <div style="display:flex;gap:12px;align-items:center;justify-content:space-between">
+        <div>
+          <h2>Dashboard</h2>
+          <div class="muted">Role: <span id="roleLabel">Guest</span></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center"><button id="createProject" class="btn primary">Create project</button><button id="uploadProgress" class="btn secondary">Upload progress</button></div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="grid">
+        <div class="card kpi"><div class="muted">Active Projects</div><div class="value">24</div></div>
+        <div class="card kpi"><div class="muted">% On-time</div><div class="value">72%</div></div>
+        <div class="card kpi"><div class="muted">Amount Spent</div><div class="value">₱ 128,432,000</div></div>
+      </div>
+
+      <div style="display:flex;gap:16px;margin-top:12px;align-items:flex-start">
+        <div style="flex:2">
+          <div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><h3>Projects Map</h3><div class="muted">Click pins for details</div></div><div class="map-placeholder">Interactive map placeholder</div></div>
+
+          <div style="height:12px"></div>
+          <div class="card"><h3>Procurement Tracker</h3>
+            <div style="height:12px"></div>
+            <div style="display:flex;gap:8px;margin-bottom:8px"><input id="filterText" placeholder="Filter contractor or title" style="flex:1;padding:8px;border-radius:8px;border:1px solid rgba(2,6,23,0.04)"/><select id="stageFilter"><option>All stages</option><option>Open</option><option>Closed</option></select></div>
+            <table>
+              <thead><tr><th>ID</th><th>Title</th><th>Stage</th><th>Awardee</th><th>Budget</th><th></th></tr></thead>
+              <tbody id="projectTable">
+                <tr><td>TT-001</td><td>Community Hall Rehab</td><td><span class="status-ontrack">On-track</span></td><td>ABC Constructions</td><td>₱2,200,000</td><td><button class="btn ghost" data-id="TT-001">View</button></td></tr>
+                <tr><td>TT-002</td><td>Flood Control</td><td><span class="status-flagged">Flagged</span></td><td>Delta Builders</td><td>₱12,000,000</td><td><button class="btn ghost" data-id="TT-002">View</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+          <div class="card"><h4>Recent alerts</h4><div class="muted">3 critical, 8 info</div><ul><li>TT-002 flagged for price anomaly</li><li>New citizen report near Poblacion</li></ul></div>
+          <div class="card"><h4>Quick actions</h4><div style="display:flex;flex-direction:column;gap:8px"><button class="btn primary">Upload progress</button><button class="btn secondary">Open procurement</button></div></div>
+          <div class="card"><h4>Recent reports</h4><div class="muted">Citizen reports awaiting triage</div><ul><li>Broken bridge — TT-R-005</li><li>Incomplete fencing — TT-R-007</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="project-template">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><div><h2 id="projTitle">Community Hall Rehab</h2><div class="muted">ID: <strong id="projId">TT-001</strong> • Agency: Municipality</div></div><div style="display:flex;gap:8px"><button id="addProgress" class="btn primary">Add progress report</button><button id="exportDossier" class="btn secondary">Export dossier</button></div></div>
+      <div style="height:12px"></div>
+      <div style="display:flex;gap:12px">
+        <div style="flex:2">
+          <div class="card"><h3>Overview</h3><div class="muted">Summary & timeline</div><div style="height:12px"></div><div class="muted">Timeline placeholder (Gantt)</div></div>
+          <div style="height:12px"></div>
+          <div class="card"><h3>Progress</h3><div class="muted">Photos & check-ins</div><div style="height:8px"></div><div class="photo-grid" id="photoGrid"><img src="https://picsum.photos/seed/1/400/300" alt="photo1"><img src="https://picsum.photos/seed/2/400/300" alt="photo2"><img src="https://picsum.photos/seed/3/400/300" alt="photo3"></div></div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+          <div class="card"><h4>Financials</h4><div class="muted">Payments & receipts</div><table><tr><td>Budget</td><td>₱2,200,000</td></tr><tr><td>Spent</td><td>₱1,200,000</td></tr></table></div>
+          <div class="card"><h4>Anomalies & comments</h4><div class="muted">2 anomalies</div><ul><li>Price > median <span class="badge">35</span></li><li>Repeated contractor</li></ul></div>
+          <div class="card"><h4>Audit logs</h4><div class="muted">Immutable</div><ul><li>2025-08-20: Document uploaded (admin)</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="report-template">
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:center"><div><h2>Report an issue</h2><div class="muted">Quick mobile-first flow (desktop preview)</div></div></div>
+      <div style="height:12px"></div>
+      <div class="card">
+        <div class="form-group"><label>Category</label><select id="reportCategory"><option>Delay</option><option>Corruption</option><option>Safety</option><option>Others</option></select></div>
+        <div class="form-group"><label>Photo</label><input id="reportPhoto" type="file" accept="image/*"/></div>
+        <div class="form-group"><label>Description</label><textarea id="reportDesc" maxlength="300" placeholder="Short description (max 300 chars)"></textarea></div>
+        <div style="display:flex;gap:8px;align-items:center"><label><input id="contactOpt" type="checkbox"/> Include contact info</label><div style="margin-left:auto"><button id="submitReport" class="btn primary">Submit</button></div></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="anomalies-template">
+    <div>
+      <h2>Anomalies</h2>
+      <div style="height:12px"></div>
+      <div class="card"><h3>Top risk items</h3><ul id="anomalyList"><li>TT-002 — price anomaly (score: 87)</li><li>TT-011 — suspicious doc (score: 74)</li></ul></div>
+    </div>
+  </template>
+
+  <template id="audit-template">
+    <div>
+      <h2>Audit Toolkit</h2>
+      <div style="height:12px"></div>
+      <div class="card"><h3>Generate Audit Dossier</h3>
+        <div style="display:flex;gap:8px;margin-top:8px"><select id="auditPeriod"><option>Last 30 days</option><option>Last 90 days</option><option>Custom</option></select><select id="auditFormat"><option>PDF</option><option>CSV</option></select><button id="generateAudit" class="btn primary">Generate</button></div>
+        <div style="height:12px"></div>
+        <div class="muted">Realtime preview (mock)</div>
+      </div>
+    </div>
+  </template>
+
+  <template id="settings-template">
+    <div>
+      <h2>Settings</h2>
+      <div style="height:12px"></div>
+      <div class="card"><h3>Profile</h3><div class="form-group"><label>Full name</label><input id="setName"/></div><div class="form-group"><label>Organization</label><input id="setOrg"/></div></div>
+      <div style="height:12px"></div>
+      <div class="card"><h3>Security</h3><div class="form-group"><label>2FA</label><select id="set2fa"><option>Disabled</option><option>SMS</option><option>Authenticator app</option></select></div><div class="form-group"><label>Active sessions</label><div class="muted">You have 1 active session</div></div></div>
+    </div>
+  </template>
+
+  <script>
+    // Simple SPA logic to render templates and simulate flows
+    const appRoot = document.getElementById('app-root');
+    const modalRoot = document.getElementById('modal-root');
+    const loginTpl = document.getElementById('login-template').content;
+    const appTpl = document.getElementById('app-template').content;
+    const dashboardTpl = document.getElementById('dashboard-template').content;
+    const projectTpl = document.getElementById('project-template').content;
+    const reportTpl = document.getElementById('report-template').content;
+    const anomaliesTpl = document.getElementById('anomalies-template').content;
+    const auditTpl = document.getElementById('audit-template').content;
+    const settingsTpl = document.getElementById('settings-template').content;
+
+    // Initial view: show login
+    function showLogin(){
+      appRoot.innerHTML = '';
+      appRoot.appendChild(loginTpl.cloneNode(true));
+      const toggle = document.getElementById('togglePw');
+      const pw = document.getElementById('password');
+      const loginBtn = document.getElementById('loginBtn');
+      const ssoBtn = document.getElementById('ssoBtn');
+      const guest = document.getElementById('guest');
+      toggle.addEventListener('click',()=>{if(pw.type==='password'){pw.type='text';toggle.textContent='Hide'}else{pw.type='password';toggle.textContent='Show'}})
+      loginBtn.addEventListener('click',onLogin);
+      ssoBtn.addEventListener('click',()=>{showToast('Redirecting to Government SSO…');setTimeout(()=>showSSORedirect(),900)});
+      guest.addEventListener('click',(e)=>{e.preventDefault();loginAs('Citizen','Guest User')});
+      document.getElementById('contrast').addEventListener('click',()=>document.body.classList.toggle('high-contrast'));
+      document.getElementById('largeText').addEventListener('click',()=>document.body.classList.toggle('large-text'));
+    }
+
+    function onLogin(){
+      const email = document.getElementById('email').value.trim();
+      const pw = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+      if(!email || !pw){showToast('Please enter email and password');return}
+      showToast('Authenticating…');
+      // simulate auth
+      setTimeout(()=>{
+        // if role requires 2FA (LGU Officer, Auditor, Admin), show 2FA modal
+        const r = role||'Citizen';
+        loginAs(r,email);
+      },900)
+    }
+
+    function showSSORedirect(){
+      showToast('SSO redirect (mock) — authentication successful');
+      setTimeout(()=>loginAs('LGU Officer','SSO User'),800);
+    }
+
+    function loginAs(role,name){
+      // render app shell
+      appRoot.innerHTML = '';
+      appRoot.appendChild(appTpl.cloneNode(true));
+      document.getElementById('userName').textContent = name||'User';
+      document.getElementById('roleLabel').textContent = role||'Citizen';
+      // role-based 2FA requirement
+      if(['LGU Officer','Auditor','Admin'].includes(role)){
+        setTimeout(()=>show2FAModal(role),500);
+      }
+      setupNav();
+      renderView('dashboard');
+      document.getElementById('reportFab').addEventListener('click',()=>renderView('reports'));
+      // avatar logout
+      document.getElementById('avatar').addEventListener('click',()=>showProfileMenu(name));
+    }
+
+    function setupNav(){
+      document.querySelectorAll('.nav-item').forEach(el=>el.addEventListener('click',e=>{document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));el.classList.add('active');renderView(el.dataset.view)}));
+    }
+
+    function renderView(name){
+      const area = document.getElementById('viewArea');
+      area.innerHTML='';
+      switch(name){
+        case 'dashboard': area.appendChild(dashboardTpl.cloneNode(true)); attachDashboardHandlers(); break;
+        case 'projects': area.appendChild(projectTpl.cloneNode(true)); break;
+        case 'map': area.innerHTML='<div class="card"><h2>Map</h2><div class="map-placeholder">Map view</div></div>'; break;
+        case 'reports': area.appendChild(reportTpl.cloneNode(true)); attachReportHandlers(); break;
+        case 'anomalies': area.appendChild(anomaliesTpl.cloneNode(true)); break;
+        case 'audit': area.appendChild(auditTpl.cloneNode(true)); attachAuditHandlers(); break;
+        case 'exports': area.innerHTML='<div class="card"><h2>Exports</h2><div class="muted">No exports yet</div></div>'; break;
+        case 'settings': area.appendChild(settingsTpl.cloneNode(true)); break;
+        case 'help': area.innerHTML='<div class="card"><h2>Help</h2><p class="muted">Guides and support chat (mock)</p></div>'; break;
+        default: area.appendChild(dashboardTpl.cloneNode(true)); break;
+      }
+    }
+
+    function attachDashboardHandlers(){
+      // project view buttons
+      document.querySelectorAll('#projectTable button').forEach(btn=>btn.addEventListener('click',()=>renderView('projects')));
+      document.getElementById('createProject').addEventListener('click',()=>showCreateProjectModal());
+      document.getElementById('uploadProgress').addEventListener('click',()=>showUploadModal());
+    }
+
+    function attachReportHandlers(){
+      const submit = document.getElementById('submitReport');
+      submit.addEventListener('click',()=>{
+        const category = document.getElementById('reportCategory').value;
+        const file = document.getElementById('reportPhoto').files[0];
+        const desc = document.getElementById('reportDesc').value;
+        if(!category || !file){showToast('Please choose a category and attach a photo');return}
+        // simulate upload + triage
+        showToast('Uploading report...');
+        setTimeout(()=>{const id = 'TT-R-'+Math.floor(Math.random()*900+100); showToast('Report submitted. ID: '+id); renderView('dashboard')},1200);
+      });
+    }
+
+    function attachAuditHandlers(){
+      document.getElementById('generateAudit').addEventListener('click',()=>{showToast('Generating audit dossier...');setTimeout(()=>showToast('Audit PDF ready (mock)'),1200)});
+    }
+
+    // Modals & 2FA
+    function show2FAModal(role){
+      const backdrop = document.createElement('div');backdrop.className='modal-backdrop';backdrop.style.display='flex';
+      const modal = document.createElement('div');modal.className='modal';
+      modal.innerHTML = `<h3>Two-Factor Authentication</h3><p class="muted">Enter the 6-digit code sent to your phone/email for role: ${role}</p><div style="height:8px"></div><div style="display:flex;gap:8px"><input id="code1" maxlength="1" style="width:40px;text-align:center"/><input id="code2" maxlength="1" style="width:40px;text-align:center"/><input id="code3" maxlength="1" style="width:40px;text-align:center"/><input id="code4" maxlength="1" style="width:40px;text-align:center"/><input id="code5" maxlength="1" style="width:40px;text-align:center"/><input id="code6" maxlength="1" style="width:40px;text-align:center"/></div><div style="height:12px"></div><div style="display:flex;gap:8px;align-items:center"><label><input id="rememberDevice" type="checkbox"/> Remember this device (30 days)</label><div style="margin-left:auto"><button id="verify2fa" class="btn primary">Verify</button></div></div>`;
+      backdrop.appendChild(modal);modalRoot.appendChild(backdrop);
+      backdrop.addEventListener('click',(e)=>{if(e.target===backdrop){backdrop.remove()}})
+      document.getElementById('verify2fa').addEventListener('click',()=>{backdrop.remove();showToast('2FA verified')});
+    }
+
+    function showCreateProjectModal(){
+      const modal = createModal(`<h3>Create project (mock)</h3><div class="form-group"><label>Title</label><input id="newTitle"/></div><div style="display:flex;gap:8px"><button id="createNow" class="btn primary">Create</button><button id="cancelCreate" class="btn ghost">Cancel</button></div>`);
+      modal.querySelector('#createNow').addEventListener('click',()=>{showToast('Project created (mock)');closeModal(modal)});
+      modal.querySelector('#cancelCreate').addEventListener('click',()=>closeModal(modal));
+    }
+
+    function showUploadModal(){
+      const modal = createModal(`<h3>Upload progress</h3><div class="form-group"><label>Photos</label><input id="upFiles" type="file" multiple accept="image/*"/></div><div style="display:flex;gap:8px"><button id="startUpload" class="btn primary">Upload</button><button id="cancelUpload" class="btn ghost">Cancel</button></div>`);
+      modal.querySelector('#startUpload').addEventListener('click',()=>{showToast('Uploading files...');closeModal(modal)});
+      modal.querySelector('#cancelUpload').addEventListener('click',()=>closeModal(modal));
+    }
+
+    function createModal(innerHtml){
+      const backdrop = document.createElement('div');backdrop.className='modal-backdrop';backdrop.style.display='flex';
+      const modal = document.createElement('div');modal.className='modal';modal.innerHTML=innerHtml;
+      backdrop.appendChild(modal);modalRoot.appendChild(backdrop);
+      return modal;
+    }
+    function closeModal(modal){modal.closest('.modal-backdrop').remove();}
+
+    function showProfileMenu(name){
+      const modal = createModal(`<h3>${name}</h3><div style="display:flex;gap:8px"><button id="logoutBtn" class="btn ghost">Logout</button><button id="profileBtn" class="btn secondary">Profile</button></div>`);
+      modal.querySelector('#logoutBtn').addEventListener('click',()=>{closeModal(modal);performLogout();});
+      modal.querySelector('#profileBtn').addEventListener('click',()=>{closeModal(modal);renderView('settings')});
+    }
+
+    function performLogout(){
+      // clear (mock) session
+      appRoot.innerHTML='';
+      showToast('You\'ve been logged out');
+      setTimeout(()=>showLogin(),800);
+    }
+
+    // Toasts
+    function showToast(text){
+      const t = document.createElement('div');t.className='toast';t.textContent=text;document.body.appendChild(t);
+      setTimeout(()=>t.remove(),2400);
+    }
+
+    // Start
+    showLogin();
+
+    // Accessibility: keyboard focus on Enter for login
+    document.addEventListener('keydown',e=>{if(e.key==='Enter' && document.getElementById('loginBtn')){document.getElementById('loginBtn').click()}})
+
+  </script>
+</body>
+</html>
